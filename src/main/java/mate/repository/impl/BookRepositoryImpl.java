@@ -1,6 +1,8 @@
 package mate.repository.impl;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import mate.model.Book;
 import mate.repository.BookRepository;
@@ -43,6 +45,14 @@ public class BookRepositoryImpl implements BookRepository {
                     "SELECT b FROM Book b", Book.class).getResultList();
         } catch (Exception e) {
             throw new RuntimeException("Can't get all users from DB", e);
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try (EntityManager entityManager = sessionFactory.createEntityManager()) {
+            Book book = entityManager.find(Book.class, id);
+            return Optional.ofNullable(book);
         }
     }
 }
