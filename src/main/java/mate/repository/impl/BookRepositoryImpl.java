@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import mate.exception.EntityNotFoundException;
 import mate.model.Book;
 import mate.repository.BookRepository;
 import org.hibernate.Session;
@@ -53,6 +54,20 @@ public class BookRepositoryImpl implements BookRepository {
         try (EntityManager entityManager = sessionFactory.createEntityManager()) {
             Book book = entityManager.find(Book.class, id);
             return Optional.ofNullable(book);
+        }
+    }
+
+    @Override
+    public List<Book> findAllByTitle(String title) {
+        String lowerCaseTitle = title.toLowerCase();
+        try (EntityManager entityManager = sessionFactory.createEntityManager()) {
+            return entityManager
+                    .createQuery("SELECT b FROM Book b "
+                            + "WHERE lower(b.title) LIKE :title", Book.class)
+                    .setParameter("title", "%" + lowerCaseTitle + "%")
+                    .getResultList();
+        } catch (Exception e) {
+            throw new EntityNotFoundException("Can't find books by title");
         }
     }
 }

@@ -37,4 +37,11 @@ public class BookServiceImpl implements BookService {
         );
         return bookMapper.toDto(book);
     }
+
+    @Override
+    public List<BookDto> getAllByName(String title) {
+        return bookRepository.findAllByTitle(title).stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
 }
