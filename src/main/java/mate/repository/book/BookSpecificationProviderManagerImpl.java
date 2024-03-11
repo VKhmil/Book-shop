@@ -1,14 +1,16 @@
-package mate.repository;
+package mate.repository.book;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.exception.SpecificationProviderException;
 import mate.model.Book;
+import mate.repository.SpecificationProvider;
+import mate.repository.SpecificationProviderManager;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class SpecificationProviderManagerImpl implements SpecificationProviderManager<Book> {
+public class BookSpecificationProviderManagerImpl implements SpecificationProviderManager<Book> {
     private List<SpecificationProvider<Book>> bookSpecificationProviders;
 
     @Override
