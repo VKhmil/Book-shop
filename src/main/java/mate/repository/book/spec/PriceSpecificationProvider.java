@@ -19,9 +19,9 @@ public class PriceSpecificationProvider implements SpecificationProvider<Book> {
     public Specification<Book> getSpecification(String[] params) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder
-                    .between(root.get(KEY_WORD), params[0],
-                            (params.length > 1) ? params[1] : params[0]);
-            return criteriaBuilder.and(predicate);
+                    .lessThanOrEqualTo(root.get(KEY_WORD), params[0]);
+            return predicate;
         };
     }
 }
+
