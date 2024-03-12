@@ -1,4 +1,4 @@
- package mate.repository.book.spec;
+package mate.repository.book.spec;
 
 import lombok.RequiredArgsConstructor;
 import mate.dto.BookSearchParametersDto;
