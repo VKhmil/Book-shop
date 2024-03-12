@@ -8,16 +8,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DescriptionSpecificationProvider implements SpecificationProvider<Book> {
+    private static final String KEY_WORD = "description";
+
     @Override
     public String getKey() {
-        return "description";
+        return KEY_WORD;
     }
 
     @Override
     public Specification<Book> getSpecification(String[] params) {
         return (root, query, criteriaBuilder) -> {
             Predicate predicate = criteriaBuilder
-                    .like(root.get("description"),
+                    .like(root.get(KEY_WORD),
                             "%" + params[0] + "%");
             return criteriaBuilder.and(predicate);
         };

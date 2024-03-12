@@ -20,6 +20,6 @@ public class BookSpecificationProviderManagerImpl implements SpecificationProvid
                 .findFirst()
                 .orElseThrow(()
                         -> new SpecificationProviderException("Can't find correct "
-                        + "specification provider for key " + key));
+                        + "specification provider for key: " + key));
     }
 }
