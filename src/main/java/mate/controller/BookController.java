@@ -33,11 +33,6 @@ public class BookController {
         return bookService.findById(id);
     }
 
-    @GetMapping("/by-title")
-    public List<BookDto> getAllByTitle(@RequestParam String title) {
-        return bookService.getAllByName(title);
-    }
-
     @GetMapping("/search")
     public List<BookDto> search(BookSearchParametersDto bookSearchParametersDto) {
         return bookService.search(bookSearchParametersDto);

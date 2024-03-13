@@ -7,8 +7,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TitleSpecificationProvider implements SpecificationProvider<Book> {
-    private static final String KEY_WORD = "title";
+public class IsbnSpecificationProvider implements SpecificationProvider<Book> {
+    private static final String KEY_WORD = "isbn";
 
     @Override
     public String getKey() {
@@ -16,7 +16,7 @@ public class TitleSpecificationProvider implements SpecificationProvider<Book> {
     }
 
     public Specification<Book> getSpecification(String[] params) {
-        return (root, query, criteriaBuilder)
-                -> root.get(KEY_WORD).in(Arrays.stream(params).toArray());
+        return (root, query, criteriaBuilder) -> root.get(KEY_WORD)
+                .in(Arrays.stream(params).toArray());
     }
 }
