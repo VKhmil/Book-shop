@@ -43,13 +43,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> getAllByName(String title) {
-        return bookRepository.findAllByTitle(title).stream()
-                .map(bookMapper::toDto)
-                .toList();
-    }
-
-    @Override
     public void deleteById(Long id) {
         bookRepository.deleteById(id);
     }
