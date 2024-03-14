@@ -1,8 +1,9 @@
-package com.book_app.dto;
+package com.bookappstore.dto;
 
-import java.math.BigDecimal;
+import com.bookappstore.validation.Isbn;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import lombok.Data;
 
 @Data
@@ -12,6 +13,7 @@ public class CreateBookRequestDto {
     @NotNull
     private String author;
     @NotNull
+    @Isbn
     private String isbn;
     @NotNull
     @Min(0)

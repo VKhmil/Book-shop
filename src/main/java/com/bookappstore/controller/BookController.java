@@ -1,11 +1,12 @@
-package com.book_app.controller;
+package com.bookappstore.controller;
 
+import com.bookappstore.dto.BookDto;
+import com.bookappstore.dto.BookSearchParametersDto;
+import com.bookappstore.dto.CreateBookRequestDto;
+import com.bookappstore.service.BookService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import com.book_app.dto.BookDto;
-import com.book_app.dto.BookSearchParametersDto;
-import com.book_app.dto.CreateBookRequestDto;
-import com.book_app.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +39,7 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto save(@RequestBody CreateBookRequestDto createBookRequestDto) {
+    public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
         return bookService.save(createBookRequestDto);
     }
 
