@@ -1,8 +1,8 @@
 package com.bookappstore.repository.book.spec;
 
-import jakarta.persistence.criteria.Predicate;
 import com.bookappstore.model.Book;
 import com.bookappstore.repository.SpecificationProvider;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 

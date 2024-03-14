@@ -1,10 +1,10 @@
 package com.bookappstore.repository.book.spec;
 
-import lombok.RequiredArgsConstructor;
 import com.bookappstore.dto.BookSearchParametersDto;
 import com.bookappstore.model.Book;
 import com.bookappstore.repository.SpecificationBuilder;
 import com.bookappstore.repository.SpecificationProviderManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 

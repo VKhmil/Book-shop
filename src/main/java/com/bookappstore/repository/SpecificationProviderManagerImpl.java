@@ -1,9 +1,9 @@
 package com.bookappstore.repository;
 
-import java.util.List;
-import lombok.RequiredArgsConstructor;
 import com.bookappstore.exception.SpecificationProviderException;
 import com.bookappstore.model.Book;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
