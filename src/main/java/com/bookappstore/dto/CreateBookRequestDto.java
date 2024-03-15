@@ -1,5 +1,6 @@
 package com.bookappstore.dto;
 
+import com.bookappstore.validation.Description;
 import com.bookappstore.validation.Isbn;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -19,6 +20,8 @@ public class CreateBookRequestDto {
     @NotNull
     @Min(0)
     private BigDecimal price;
+    @NotBlank
+    @Description
     private String description;
     private String coverImage;
 }
