@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Book management", description = "Endpoints for managing books")
+@Tag(name = "Book management", description = "Endpoints for managing books API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/api/books")
@@ -29,27 +29,27 @@ public class BookController {
 
     @GetMapping
     @Operation(summary = "Find all books", description = "Find all books, "
-            + "uses pagination")
+            + "uses pagination for pages in web")
     public List<BookDto> findAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Find book by id", description = "Find book by id")
+    @Operation(summary = "Find book by id", description = "Find book by id in DB")
     public BookDto findById(@PathVariable Long id) {
         return bookService.findById(id);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Searching a book by parameter",
-            description = "Searching a book by parameter dynamically")
+            description = "Searching a book by parameter dynamically by using request parameters")
     public List<BookDto> search(BookSearchParametersDto bookSearchParametersDto) {
         return bookService.search(bookSearchParametersDto);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new book", description = "Create new book in DB")
+    @Operation(summary = "Create new book", description = "Create new book in DB with request parameters")
     public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
         return bookService.save(createBookRequestDto);
     }
@@ -57,7 +57,7 @@ public class BookController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete book by id",
-            description = "Delete book by id. Uses soft delete")
+            description = "Delete book by id, uses soft delete")
     public void deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
     }
