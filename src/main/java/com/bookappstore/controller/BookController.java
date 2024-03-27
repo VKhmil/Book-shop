@@ -28,27 +28,31 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    @Operation(summary = "Find all books", description = "Find all books, "
-            + "uses pagination")
+    @Operation(summary = "Find all books",
+            description = "Find all books, "
+                    + "uses pagination")
     public List<BookDto> findAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Find book by id", description = "Find book by id")
+    @Operation(summary = "Find book by id",
+            description = "Find book by id")
     public BookDto findById(@PathVariable Long id) {
         return bookService.findById(id);
     }
 
     @GetMapping("/search")
-    @Operation(summary = "", description = "")
+    @Operation(summary = "Searching a book by parameter",
+            description = "Searching a book by parameter dynamically")
     public List<BookDto> search(BookSearchParametersDto bookSearchParametersDto) {
         return bookService.search(bookSearchParametersDto);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Create new book", description = "Create new book in DB")
+    @Operation(summary = "Create new book",
+            description = "Create new book in DB")
     public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
         return bookService.save(createBookRequestDto);
     }
