@@ -1,4 +1,4 @@
-package com.bookappstore.dto;
+package com.bookappstore.dto.book;
 
 import com.bookappstore.validation.Description;
 import com.bookappstore.validation.Isbn;
