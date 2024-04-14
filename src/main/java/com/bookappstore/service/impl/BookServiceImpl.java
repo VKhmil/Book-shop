@@ -1,8 +1,8 @@
 package com.bookappstore.service.impl;
 
-import com.bookappstore.dto.BookDto;
-import com.bookappstore.dto.BookSearchParametersDto;
-import com.bookappstore.dto.CreateBookRequestDto;
+import com.bookappstore.dto.book.BookDto;
+import com.bookappstore.dto.book.BookSearchParametersDto;
+import com.bookappstore.dto.book.CreateBookRequestDto;
 import com.bookappstore.exception.EntityNotFoundException;
 import com.bookappstore.mapper.BookMapper;
 import com.bookappstore.model.Book;
@@ -29,7 +29,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll(Pageable pageable) { //pageable
+    public List<BookDto> findAll(Pageable pageable) {
         return bookRepository.findAll(pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
@@ -38,7 +38,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDto findById(Long id) {
         Book book = bookRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find employee by id" + id)
+                () -> new EntityNotFoundException("Can't find book by id" + id)
         );
         return bookMapper.toDto(book);
     }
