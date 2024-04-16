@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: fill-users-with-data
+      author: onlinebookstore
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: "email"
+                  value: "bart.doe@example.com"
+              - column:
+                  name: "password"
+                  value: "$2a$10$MRbfJgyaiNfkJuzoXhDmkOc9WeCf.WBKEvcQV6FEAYAWISB09pol"
+              - column:
+                  name: "first_name"
+                  value: "Bart"
+              - column:
+                  name: "last_name"
+                  value: "Simpson"
+              - column:
+                  name: "shipping_address"
+                  value: "742 Evergreen Terrace, Springfield, USA"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: "email"
+                  value: "lisa.doe@example.com"
+              - column:
+                  name: "password"
+                  value: "$2a$10$aWWI9a9f5TGBdCDgxGAFUezMzgJJiGiZAbo/iu1UdzNVKpKRHsIsC"
+              - column:
+                  name: "first_name"
+                  value: "Lisa"
+              - column:
+                  name: "last_name"
+                  value: "Simpson"
+              - column:
+                  name: "shipping_address"
+                  value: "742 Evergreen Terrace, Springfield, USA"
+
