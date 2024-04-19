@@ -9,7 +9,7 @@ import com.bookappstore.model.User;
 import com.bookappstore.repository.user.UserRepository;
 import com.bookappstore.repository.user.role.RoleRepository;
 import com.bookappstore.service.UserService;
-import java.util.HashSet;
+import jakarta.annotation.PostConstruct;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +22,13 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private Role userRole;
+
+    @PostConstruct
+    public void init() {
+        userRole = roleRepository.findByName(Role.RoleName.USER)
+                .orElseThrow(() -> new IllegalStateException("User role not found"));
+    }
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -31,12 +38,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
-
-        Role userRole = roleRepository.findByName(Role.RoleName.USER)
-                .orElseThrow(() -> new RegistrationException("Can't find role by name"));
-        Set<Role> defaultUserRoleSet = new HashSet<>();
-        defaultUserRoleSet.add(userRole);
-        user.setRoles(defaultUserRoleSet);
+        user.setRoles(Set.of(userRole));
         return userMapper.toUserResponseDto(userRepository.save(user));
     }
 }

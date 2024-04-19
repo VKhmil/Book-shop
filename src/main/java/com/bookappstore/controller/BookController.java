@@ -55,7 +55,7 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create new book",
             description = "Create new book in DB")
     public BookDto save(@RequestBody @Valid CreateBookRequestDto createBookRequestDto) {
@@ -72,7 +72,7 @@ public class BookController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Delete book by id",
             description = "Delete book by id. Uses soft delete")
     public void deleteById(@PathVariable Long id) {
