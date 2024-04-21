@@ -31,7 +31,8 @@ public class JwtUtil {
                 .build();
     }
 
-    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+    public String generateToken(String username,
+                                Collection<? extends GrantedAuthority> authorities) {
         List<String> roles = getRoles(authorities);
 
         return Jwts.builder()
@@ -61,6 +62,7 @@ public class JwtUtil {
                 .getPayload();
         return claimsResolver.apply(claims);
     }
+
     private List<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
         return authorities.stream()
                 .map(GrantedAuthority::getAuthority)
