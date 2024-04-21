@@ -17,11 +17,12 @@ public class AuthenticationService {
     public UserLoginResponseDto authenticate(UserLoginRequestDto request) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.password(),
-                        request.email())
+                        request.email(),
+                        request.password())
+
 
         );
-        String token = jwtUtil.generateToken(authentication.getName());
+        String token = jwtUtil.generateToken(authentication.getName(), authentication.getAuthorities());
         return new UserLoginResponseDto(token);
     }
 }

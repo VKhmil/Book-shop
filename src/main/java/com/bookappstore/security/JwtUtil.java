@@ -7,10 +7,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,9 +31,12 @@ public class JwtUtil {
                 .build();
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, Collection<? extends GrantedAuthority> authorities) {
+        List<String> roles = getRoles(authorities);
+
         return Jwts.builder()
                 .subject(username)
+                .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secret)
@@ -53,5 +60,10 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
         return claimsResolver.apply(claims);
+    }
+    private List<String> getRoles(Collection<? extends GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
     }
 }
