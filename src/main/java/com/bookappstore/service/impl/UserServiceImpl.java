@@ -9,6 +9,7 @@ import com.bookappstore.model.User;
 import com.bookappstore.repository.user.UserRepository;
 import com.bookappstore.repository.user.role.RoleRepository;
 import com.bookappstore.service.UserService;
+import jakarta.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private Role roleUser;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto requestDto)
@@ -38,5 +40,17 @@ public class UserServiceImpl implements UserService {
         defaultUserRoleSet.add(userRole);
         user.setRoles(defaultUserRoleSet);
         return userMapper.toUserResponseDto(userRepository.save(user));
+    }
+
+    @PostConstruct
+    public void initializeRoles() {
+        roleUser = roleRepository.findByName(Role.RoleName.USER)
+                .orElseGet(this::createRole);
+    }
+
+    private Role createRole() {
+        Role role = new Role();
+        role.setName(Role.RoleName.USER);
+        return roleRepository.save(role);
     }
 }
