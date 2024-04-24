@@ -6,6 +6,7 @@ import com.bookappstore.dto.book.BookDtoWithoutCategoryIds;
 import com.bookappstore.dto.book.CreateBookRequestDto;
 import com.bookappstore.model.Book;
 import com.bookappstore.model.Category;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.mapstruct.AfterMapping;
@@ -25,6 +26,10 @@ public interface BookMapper {
     Book toModel(CreateBookRequestDto requestDto);
 
     BookDtoWithoutCategoryIds toDtoWithoutCategories(Book book);
+
+    List<BookDto> toDtoList(List<Book> books);
+
+    List<BookDtoWithoutCategoryIds> toDtoListWithoutCategories(List<Book> books);
 
     @AfterMapping
     default void setCategoryIds(@MappingTarget BookDto bookDto, Book book) {

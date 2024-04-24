@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class BookServiceImpl implements BookService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional
     public BookDto save(CreateBookRequestDto createBookRequestDto) {
         Set<Category> categories = categoryRepository
                 .findByIdIn(createBookRequestDto.getCategoriesIds());
@@ -37,15 +39,15 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public List<BookDto> findAll(Pageable pageable) {
-        return bookRepository.findAllWithCategories(pageable).stream()
-                .map(bookMapper::toDto)
-                .toList();
+        return bookMapper.toDtoList(bookRepository
+                .findAllWithCategories(pageable));
     }
 
     @Override
     public BookDto findById(Long id) {
-        Book book = bookRepository.findById(id).orElseThrow(
+        Book book = bookRepository.findBookById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find book by id" + id)
         );
         return bookMapper.toDto(book);
@@ -59,13 +61,12 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookDto> search(BookSearchParametersDto params) {
         Specification<Book> build = bookSpecificationBuilder.build(params);
-        return bookRepository.findAll(build)
-                .stream()
-                .map(bookMapper::toDto)
-                .toList();
+        return bookMapper.toDtoList(bookRepository.findAll(build));
+
     }
 
     @Override
+    @Transactional
     public BookDto update(Long id, CreateBookRequestDto requestDto) {
         Set<Category> categories = categoryRepository
                 .findByIdIn(requestDto.getCategoriesIds());
@@ -79,10 +80,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDtoWithoutCategoryIds> findAllByCategoryId(Long categoryId) {
-        return bookRepository.findAllByCategoryId(categoryId)
-                .stream()
-                .map(bookMapper::toDtoWithoutCategories)
-                .toList();
+        return bookMapper.toDtoListWithoutCategories(bookRepository
+                .findAllByCategoryId(categoryId));
+
     }
 }
 
