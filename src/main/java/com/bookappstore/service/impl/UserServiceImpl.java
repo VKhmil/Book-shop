@@ -5,7 +5,9 @@ import com.bookappstore.dto.user.UserResponseDto;
 import com.bookappstore.exception.RegistrationException;
 import com.bookappstore.mapper.UserMapper;
 import com.bookappstore.model.Role;
+import com.bookappstore.model.ShoppingCart;
 import com.bookappstore.model.User;
+import com.bookappstore.repository.cart.ShoppingCartRepository;
 import com.bookappstore.repository.user.UserRepository;
 import com.bookappstore.repository.user.role.RoleRepository;
 import com.bookappstore.service.UserService;
@@ -23,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
     private Role roleUser;
 
     @Override
@@ -39,6 +42,10 @@ public class UserServiceImpl implements UserService {
         Set<Role> defaultUserRoleSet = new HashSet<>();
         defaultUserRoleSet.add(userRole);
         user.setRoles(defaultUserRoleSet);
+
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart.setUser(user);
+        shoppingCartRepository.save(shoppingCart);
         return userMapper.toUserResponseDto(userRepository.save(user));
     }
 
