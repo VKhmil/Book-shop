@@ -11,6 +11,7 @@ import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
 
     @GetMapping
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve user's shopping cart",
             description = "Retrieves the user's shopping cart")
     public ShoppingCartResponseDto getShoppingCart(
@@ -41,6 +43,7 @@ public class ShoppingCartController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Add book to the shopping cart",
             description = "Adds a book to the user's shopping cart")
     public ShoppingCartResponseDto addCartItem(
@@ -51,6 +54,7 @@ public class ShoppingCartController {
     }
 
     @PutMapping("/cart-items/{cartItemId}")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update quantity of a book in the shopping cart",
             description = "Updates the quantity of a book in the user's shopping cart")
     public ShoppingCartResponseDto updateCartItem(
@@ -65,6 +69,7 @@ public class ShoppingCartController {
     }
 
     @DeleteMapping("/cart-items/{cartItemId}")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Remove a book from the shopping cart",
             description = "Removes a book from the user's shopping cart")
     public ShoppingCartResponseDto deleteCartItem(
