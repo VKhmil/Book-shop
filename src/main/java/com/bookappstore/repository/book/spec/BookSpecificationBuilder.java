@@ -19,7 +19,8 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
         TITLE("title"),
         ISBN("isbn"),
         PRICE("price"),
-        DESCRIPTION("description");
+        DESCRIPTION("description"),
+        CATEGORY("category");
 
         private final String value;
 
@@ -36,39 +37,29 @@ public class BookSpecificationBuilder implements SpecificationBuilder<Book> {
     public Specification<Book> build(BookSearchParametersDto bookSearchParametersDto) {
         Specification<Book> specification = Specification.where(null);
 
-        if (bookSearchParametersDto.authors() != null && bookSearchParametersDto
-                .authors().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(SearchCriteria.AUTHOR.getValue())
-                    .getSpecification(bookSearchParametersDto.authors()));
-        }
-
-        if (bookSearchParametersDto.titles() != null && bookSearchParametersDto
-                .titles().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(SearchCriteria.TITLE.getValue())
-                    .getSpecification(bookSearchParametersDto.titles()));
-        }
-
-        if (bookSearchParametersDto.isbn() != null && bookSearchParametersDto.isbn().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(SearchCriteria.ISBN.getValue())
-                    .getSpecification(bookSearchParametersDto.isbn()));
-        }
-
-        if (bookSearchParametersDto.price() != null && bookSearchParametersDto.price().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(SearchCriteria.PRICE.getValue())
-                    .getSpecification(bookSearchParametersDto.price()));
-        }
-
-        if (bookSearchParametersDto.description() != null && bookSearchParametersDto
-                .description().length > 0) {
-            specification = specification.and(bookSpecificationProviderManager
-                    .getSpecificationProvider(SearchCriteria.DESCRIPTION.getValue())
-                    .getSpecification(bookSearchParametersDto.description()));
-        }
+        addSpecification(specification, bookSearchParametersDto.authors(),
+                SearchCriteria.AUTHOR);
+        addSpecification(specification, bookSearchParametersDto.titles(),
+                SearchCriteria.TITLE);
+        addSpecification(specification, bookSearchParametersDto.isbn(),
+                SearchCriteria.ISBN);
+        addSpecification(specification, bookSearchParametersDto.price(),
+                SearchCriteria.PRICE);
+        addSpecification(specification, bookSearchParametersDto.description(),
+                SearchCriteria.DESCRIPTION);
+        addSpecification(specification, bookSearchParametersDto.categories(),
+                SearchCriteria.CATEGORY);
 
         return specification;
+    }
+
+    private void addSpecification(Specification<Book> specification,
+                                  String[] values,
+                                  SearchCriteria searchCriteria) {
+        if (values != null && values.length > 0) {
+            specification = specification.and(bookSpecificationProviderManager
+                    .getSpecificationProvider(searchCriteria.getValue())
+                    .getSpecification(values));
+        }
     }
 }

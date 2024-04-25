@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: fill-categories-table-by-data
+      author: onlinebookstore
+      changes:
+        - insert:
+            tableName: categories
+            columns:
+              - column: {name: "name", value: "Fiction"}
+              - column: {name: "description", value: "Fiction books"}
+        - insert:
+            tableName: categories
+            columns:
+              - column: {name: "name", value: "Classic"}
+              - column: {name: "description", value: "Classic books"}
