@@ -7,6 +7,8 @@ import com.bookappstore.model.User;
 import com.bookappstore.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -24,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/cart")
+@RequestMapping("/cart")
 @Tag(name = "Shopping Cart", description = "Endpoints for managing shopping cart")
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
@@ -39,7 +41,7 @@ public class ShoppingCartController {
                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)})
                     Pageable pageable) {
         User user = (User) authentication.getPrincipal();
-        return shoppingCartService.getShoppingCartDtoByUserId(user.getId());
+        return shoppingCartService.getShoppingCart(user.getId());
     }
 
     @PostMapping
@@ -48,9 +50,9 @@ public class ShoppingCartController {
             description = "Adds a book to the user's shopping cart")
     public ShoppingCartResponseDto addCartItem(
             Authentication authentication,
-            @RequestBody CartItemRequestDto cartItemRequestDto) {
+            @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
-        return shoppingCartService.addCartItemByUserId(user.getId(), cartItemRequestDto);
+        return shoppingCartService.addCartItem(user.getId(), cartItemRequestDto);
     }
 
     @PutMapping("/cart-items/{cartItemId}")
@@ -59,8 +61,8 @@ public class ShoppingCartController {
             description = "Updates the quantity of a book in the user's shopping cart")
     public ShoppingCartResponseDto updateCartItem(
             Authentication authentication,
-            @PathVariable Long cartItemId,
-            @RequestBody CartItemUpdateDto cartItemRequestDto) {
+            @PathVariable @Positive Long cartItemId,
+            @RequestBody @Valid CartItemUpdateDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
         return shoppingCartService.updateCartItem(
                 user.getId(),
@@ -74,7 +76,7 @@ public class ShoppingCartController {
             description = "Removes a book from the user's shopping cart")
     public ShoppingCartResponseDto deleteCartItem(
             Authentication authentication,
-            @PathVariable Long cartItemId) {
+            @PathVariable @Positive Long cartItemId) {
         User user = (User) authentication.getPrincipal();
         return shoppingCartService.deleteCartItem(user.getId(), cartItemId);
     }

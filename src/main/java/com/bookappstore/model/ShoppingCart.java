@@ -24,7 +24,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Getter
 @SQLDelete(sql = "UPDATE shopping_cart SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted = false")
-@Table(name = "shopping_cart")
+@Table(name = "shopping_carts")
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,4 +37,8 @@ public class ShoppingCart {
     private Set<CartItem> cartItems = new HashSet<>();
     @Column(nullable = false)
     private boolean isDeleted;
+
+    public void removeItemFromCart(CartItem cartItem) {
+        cartItems.remove(cartItem);
+    }
 }
