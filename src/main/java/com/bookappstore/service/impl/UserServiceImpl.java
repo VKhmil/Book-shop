@@ -53,6 +53,11 @@ public class UserServiceImpl implements UserService {
                 .orElseGet(this::createRole);
     }
 
+    @PostConstruct
+    public void initShopingCart() {
+        shoppingCart = new ShoppingCart();
+    }
+
     private Role createRole() {
         Role role = new Role();
         role.setName(Role.RoleName.USER);
