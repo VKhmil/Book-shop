@@ -22,14 +22,14 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Setter
 @Getter
-@SQLDelete(sql = "UPDATE shopping_cart SET is_deleted = true WHERE id=?")
+@SQLDelete(sql = "UPDATE shopping_carts SET is_deleted = true WHERE id = ?")
 @SQLRestriction("is_deleted = false")
 @Table(name = "shopping_carts")
 public class ShoppingCart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @MapsId
     private User user;
@@ -38,7 +38,4 @@ public class ShoppingCart {
     @Column(nullable = false)
     private boolean isDeleted;
 
-    public void removeItemFromCart(CartItem cartItem) {
-        cartItems.remove(cartItem);
-    }
 }

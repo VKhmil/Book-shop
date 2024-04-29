@@ -1,16 +1,18 @@
 package com.bookappstore.controller;
 
 import com.bookappstore.dto.cart.CartItemRequestDto;
+import com.bookappstore.dto.cart.CartItemResponseDto;
 import com.bookappstore.dto.cart.CartItemUpdateDto;
-import com.bookappstore.dto.cart.ShoppingCartResponseDto;
+import com.bookappstore.dto.cart.ShoppingCartDto;
 import com.bookappstore.model.User;
+import com.bookappstore.service.CartItemService;
 import com.bookappstore.service.ShoppingCartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import java.awt.print.Pageable;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,12 +32,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Shopping Cart", description = "Endpoints for managing shopping cart")
 public class ShoppingCartController {
     private final ShoppingCartService shoppingCartService;
+    private final CartItemService cartItemService;
 
     @GetMapping
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve user's shopping cart",
             description = "Retrieves the user's shopping cart")
-    public ShoppingCartResponseDto getShoppingCart(
+    public ShoppingCartDto getShoppingCart(
             Authentication authentication,
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)})
@@ -48,36 +51,34 @@ public class ShoppingCartController {
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Add book to the shopping cart",
             description = "Adds a book to the user's shopping cart")
-    public ShoppingCartResponseDto addCartItem(
+    public CartItemResponseDto addCartItem(
             Authentication authentication,
             @RequestBody @Valid CartItemRequestDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
-        return shoppingCartService.addCartItem(user.getId(), cartItemRequestDto);
+        return cartItemService.saveItemToShoppingCart(cartItemRequestDto,
+                shoppingCartService.getShoppingCart(user.getId()));
     }
 
     @PutMapping("/cart-items/{cartItemId}")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Update quantity of a book in the shopping cart",
             description = "Updates the quantity of a book in the user's shopping cart")
-    public ShoppingCartResponseDto updateCartItem(
+    public void updateCartItem(
             Authentication authentication,
             @PathVariable @Positive Long cartItemId,
             @RequestBody @Valid CartItemUpdateDto cartItemRequestDto) {
         User user = (User) authentication.getPrincipal();
-        return shoppingCartService.updateCartItem(
-                user.getId(),
-                cartItemId,
-                cartItemRequestDto);
+        cartItemService.addQuantity(user.getId(), cartItemRequestDto.getQuantity());
     }
 
     @DeleteMapping("/cart-items/{cartItemId}")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Remove a book from the shopping cart",
             description = "Removes a book from the user's shopping cart")
-    public ShoppingCartResponseDto deleteCartItem(
+    public CartItemResponseDto deleteCartItem(
             Authentication authentication,
             @PathVariable @Positive Long cartItemId) {
         User user = (User) authentication.getPrincipal();
-        return shoppingCartService.deleteCartItem(user.getId(), cartItemId);
+        return cartItemService.delete(user.getId());
     }
 }
