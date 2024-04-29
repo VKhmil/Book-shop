@@ -33,7 +33,7 @@ public class BookController {
     @Operation(summary = "Find all books",
             description = "Find all books, "
                     + "uses pagination")
-    public List<BookDto> findAll(Pageable pageable) { // pageable do pagination
+    public List<BookDto> findAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
