@@ -72,9 +72,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto removeCartItem(Long userId, Long cartItemId) {
-        cartItemRepository.deleteById(cartItemId);
-        return shoppingCartMapper.toDto(getShoppingCartByUserId(userId));
+        ShoppingCart shoppingCart = getShoppingCartByUserId(userId);
+        CartItem cartItem = cartItemRepository.findByIdAndShoppingCartId(
+                cartItemId, shoppingCart.getId());
+        shoppingCart.removeItemFromCart(cartItem);
+        return shoppingCartMapper.toDto(shoppingCart);
     }
 
     private ShoppingCart getShoppingCartByUserId(Long userId) {

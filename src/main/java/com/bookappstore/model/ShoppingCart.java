@@ -38,4 +38,7 @@ public class ShoppingCart {
     @Column(nullable = false)
     private boolean isDeleted;
 
+    public void removeItemFromCart(CartItem cartItem) {
+        cartItems.remove(cartItem);
+    }
 }
