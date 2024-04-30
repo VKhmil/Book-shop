@@ -21,6 +21,8 @@ import org.springframework.security.core.GrantedAuthority;
 @SQLRestriction("is_deleted = false")
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
+    private static final String PREFIX = "ROLE_";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,7 +34,7 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return name.name();
+        return PREFIX + name.name();
     }
 
     public enum RoleName {

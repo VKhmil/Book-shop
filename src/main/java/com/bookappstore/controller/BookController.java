@@ -29,7 +29,7 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ROLE_CUSTOMER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Find all books",
             description = "Find all books, "
                     + "uses pagination")
