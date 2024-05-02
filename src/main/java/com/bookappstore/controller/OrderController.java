@@ -65,7 +65,8 @@ public class OrderController {
     @GetMapping("/{orderId}/items")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve all OrderItems for a specific order",
-            description = "Allows authenticated users to retrieve all OrderItems for a specific order")
+            description = "Allows authenticated users to "
+                    + "retrieve all OrderItems for a specific order")
     public Set<OrderItemResponseDto> getOrderItems(
             @PathVariable Long orderId) {
         return orderService.findAllOrderItems(orderId);
@@ -74,7 +75,8 @@ public class OrderController {
     @GetMapping("/{orderId}/items/{itemId}")
     @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Retrieve a specific OrderItem within an order",
-            description = "Allows authenticated users to retrieve a specific OrderItem within an order")
+            description = "Allows authenticated users "
+                    + "to retrieve a specific OrderItem within an order")
     public List<OrderItemResponseDto> getOrderItem(
             @PathVariable Long orderId,
             @PathVariable Long itemId) {
