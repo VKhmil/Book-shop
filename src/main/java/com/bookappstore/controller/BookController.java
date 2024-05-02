@@ -24,16 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Book management", description = "Endpoints for managing books")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/api/books")
+@RequestMapping(value = "/books")
 public class BookController {
     private final BookService bookService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(summary = "Find all books",
             description = "Find all books, "
                     + "uses pagination")
-    public List<BookDto> findAll(Pageable pageable) { // pageable do pagination
+    public List<BookDto> findAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 

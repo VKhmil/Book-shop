@@ -5,12 +5,14 @@ import com.bookappstore.dto.user.UserResponseDto;
 import com.bookappstore.exception.RegistrationException;
 import com.bookappstore.mapper.UserMapper;
 import com.bookappstore.model.Role;
+import com.bookappstore.model.ShoppingCart;
 import com.bookappstore.model.User;
+import com.bookappstore.repository.cart.ShoppingCartRepository;
 import com.bookappstore.repository.user.UserRepository;
 import com.bookappstore.repository.user.role.RoleRepository;
+import com.bookappstore.service.ShoppingCartService;
 import com.bookappstore.service.UserService;
 import jakarta.annotation.PostConstruct;
-import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +25,9 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ShoppingCartRepository shoppingCartRepository;
+    private final ShoppingCartService shoppingCartService;
+    private ShoppingCart shoppingCart;
     private Role roleUser;
 
     @Override
@@ -36,9 +41,9 @@ public class UserServiceImpl implements UserService {
 
         Role userRole = roleRepository.findByName(Role.RoleName.USER)
                 .orElseThrow(() -> new RegistrationException("Can't find role by name"));
-        Set<Role> defaultUserRoleSet = new HashSet<>();
-        defaultUserRoleSet.add(userRole);
-        user.setRoles(defaultUserRoleSet);
+        user.setRoles(Set.of(userRole));
+        shoppingCart.setUser(user);
+        shoppingCartRepository.save(shoppingCart);
         return userMapper.toUserResponseDto(userRepository.save(user));
     }
 
@@ -46,6 +51,11 @@ public class UserServiceImpl implements UserService {
     public void initializeRoles() {
         roleUser = roleRepository.findByName(Role.RoleName.USER)
                 .orElseGet(this::createRole);
+    }
+
+    @PostConstruct
+    public void initShopingCart() {
+        shoppingCart = new ShoppingCart();
     }
 
     private Role createRole() {
