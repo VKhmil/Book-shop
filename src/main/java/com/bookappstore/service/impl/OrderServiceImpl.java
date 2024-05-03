@@ -56,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
             orderItems.add(orderItem);
         }
         userOrder.setOrderItems(orderItems);
+        orderRepository.save(userOrder);
         return orderMapper.toDto(userOrder);
     }
 

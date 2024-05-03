@@ -9,13 +9,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
+@EqualsAndHashCode
 @Table(name = "orders_item")
 public class OrderItem {
     @Id
@@ -41,25 +42,5 @@ public class OrderItem {
         this.book = cartItem.getBook();
         this.price = cartItem.getBook().getPrice();
         this.quantity = cartItem.getQuantity();
-    }
-
-    @Override // TODO
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        OrderItem orderItem = (OrderItem) o;
-        return Objects.equals(id, orderItem.id)
-                && Objects.equals(order, orderItem.order)
-                && Objects.equals(book, orderItem.book)
-                && Objects.equals(price, orderItem.price);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, order, book, price);
     }
 }
