@@ -8,5 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
-    Optional<OrderItem> getByOrderIdAndItemId(@Param("orderId") Long orderId, @Param("itemId") Long itemId);
+    Optional<OrderItem> getByOrderIdAndItemId(@Param("orderId") Long orderId,
+                                              @Param("itemId") Long itemId);
 }
