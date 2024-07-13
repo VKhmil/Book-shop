@@ -3,13 +3,14 @@ package com.bookappstore.controller;
 import com.bookappstore.dto.order.OrderRequestDto;
 import com.bookappstore.dto.order.OrderResponseDto;
 import com.bookappstore.dto.order.OrderUpdateDto;
-import com.bookappstore.dto.order.item.OrderItemResponseDto;
+import com.bookappstore.dto.orderitem.OrderItemResponseDto;
 import com.bookappstore.model.User;
 import com.bookappstore.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -57,9 +58,9 @@ public class OrderController {
             description = "Update order status")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void updateOrderStatus(@PathVariable Long id,
-                                  @RequestBody OrderUpdateDto orderUpdateRequestDto) {
-        orderService.setUpdateStatus(id, orderUpdateRequestDto);
+    public OrderResponseDto updateOrderStatus(@PathVariable @Positive Long id,
+                                  @RequestBody @Valid OrderUpdateDto orderUpdateRequestDto) {
+        return orderService.setUpdateStatus(id, orderUpdateRequestDto);
     }
 
     @GetMapping("/{orderId}/items")
@@ -68,7 +69,7 @@ public class OrderController {
             description = "Allows authenticated users to "
                     + "retrieve all OrderItems for a specific order")
     public Set<OrderItemResponseDto> getOrderItems(
-            @PathVariable Long orderId) {
+            @PathVariable @Positive Long orderId) {
         return orderService.findAllOrderItems(orderId);
     }
 
@@ -78,8 +79,8 @@ public class OrderController {
             description = "Allows authenticated users "
                     + "to retrieve a specific OrderItem within an order")
     public List<OrderItemResponseDto> getOrderItem(
-            @PathVariable Long orderId,
-            @PathVariable Long itemId) {
+            @PathVariable @Positive Long orderId,
+            @PathVariable @Positive Long itemId) {
         return orderService.getItems(orderId, itemId);
 
     }

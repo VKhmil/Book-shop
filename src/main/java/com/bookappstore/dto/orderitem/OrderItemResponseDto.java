@@ -1,4 +1,4 @@
-package com.bookappstore.dto.order.item;
+package com.bookappstore.dto.orderitem;
 
 public record OrderItemResponseDto(
         Long id,

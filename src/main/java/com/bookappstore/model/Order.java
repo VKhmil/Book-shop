@@ -36,9 +36,9 @@ public class Order {
     private BigDecimal total;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status;
+    private Status status = Status.PENDING;
     @Column(nullable = false)
-    private LocalDateTime orderDate;
+    private LocalDateTime orderDate = LocalDateTime.now();
     @Column(nullable = false)
     private String shippingAddress;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -46,18 +46,9 @@ public class Order {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public Order() {
-    }
-
-    public Order(ShoppingCart shoppingCart) {
-        this.user = shoppingCart.getUser();
-        this.status = Status.PENDING;
-        this.orderDate = LocalDateTime.now();
-    }
-
     public enum Status {
-        DELIVERED,
+        NEW,
         PENDING,
-        COMPLETED
+        COMPLETED;
     }
 }

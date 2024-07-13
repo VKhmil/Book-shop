@@ -2,6 +2,7 @@ package com.bookappstore.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,16 +17,16 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(of = {"order", "book"})
 @Table(name = "orders_item")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
     @Column(nullable = false)
@@ -35,12 +36,4 @@ public class OrderItem {
     @Column(nullable = false)
     private boolean isDeleted = false;
 
-    public OrderItem() {
-    }
-
-    public OrderItem(CartItem cartItem) {
-        this.book = cartItem.getBook();
-        this.price = cartItem.getBook().getPrice();
-        this.quantity = cartItem.getQuantity();
-    }
 }

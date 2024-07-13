@@ -1,6 +1,6 @@
 package com.bookappstore.dto.order;
 
-import com.bookappstore.dto.order.item.OrderItemResponseDto;
+import com.bookappstore.dto.orderitem.OrderItemResponseDto;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
