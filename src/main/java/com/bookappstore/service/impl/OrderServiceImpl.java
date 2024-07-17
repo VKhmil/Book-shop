@@ -15,9 +15,7 @@ import com.bookappstore.repository.cart.ShoppingCartRepository;
 import com.bookappstore.repository.order.OrderItemRepository;
 import com.bookappstore.repository.order.OrderRepository;
 import com.bookappstore.service.OrderService;
-import com.bookappstore.service.ShoppingCartService;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +32,6 @@ public class OrderServiceImpl implements OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartMapper shoppingCartMapper;
     private final OrderItemRepository orderItemRepository;
-    private final ShoppingCartService shoppingCartService;
     private final OrderItemMapper orderItemMapper;
 
     @Override
@@ -70,17 +67,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemResponseDto> getItems(Long orderId, Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
-                "Can not find order by id:" + id));
-
-        return orderItemMapper.toDtos(order.getOrderItems());
+    public List<OrderItemResponseDto> findOrderItemById(Long orderId, Long orderItemId) {
+        Set<OrderItem> orderItem = orderItemRepository
+                .findOrderItemByOrderIdAndId(orderId, orderItemId);
+        return orderItemMapper.toDtos(orderItem);
     }
 
     @Override
-    public Set<OrderItemResponseDto> findAllOrderItems(Long orderId) {
+    public Set<OrderItemResponseDto> findAllOrderItems(Long orderId, Long userId) {
         Order order = orderRepository
-                .findById(orderId)
+                .findByIdAndUserId(orderId, userId)
                 .orElseThrow(
                         () -> new EntityNotFoundException("Can't find order by id: " + orderId)
                 );
@@ -92,8 +88,7 @@ public class OrderServiceImpl implements OrderService {
     private Order initializeNewOrder(ShoppingCart shoppingCart, OrderRequestDto requestDto) {
         Order newOrder = shoppingCartMapper.toOrder(shoppingCart);
         newOrder.setShippingAddress(requestDto.shippingAddress());
-        newOrder.setOrderDate(LocalDateTime.now());
-        newOrder.setStatus(Order.Status.NEW);
+        newOrder.setStatus(Order.Status.PENDING);
         newOrder.setTotal(countTotal(newOrder));
         return newOrder;
     }
@@ -115,5 +110,4 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findById(orderId).orElseThrow(
                 () -> new EntityNotFoundException("Cannot find order by id: " + orderId));
     }
-
 }

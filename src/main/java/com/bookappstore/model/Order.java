@@ -47,7 +47,7 @@ public class Order {
     private boolean isDeleted = false;
 
     public enum Status {
-        NEW,
+        DELIVERED,
         PENDING,
         COMPLETED;
     }

@@ -58,8 +58,9 @@ public class OrderController {
             description = "Update order status")
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public OrderResponseDto updateOrderStatus(@PathVariable @Positive Long id,
-                                  @RequestBody @Valid OrderUpdateDto orderUpdateRequestDto) {
+    public OrderResponseDto updateOrderStatus(
+            @PathVariable @Positive Long id,
+            @RequestBody @Valid OrderUpdateDto orderUpdateRequestDto) {
         return orderService.setUpdateStatus(id, orderUpdateRequestDto);
     }
 
@@ -69,8 +70,10 @@ public class OrderController {
             description = "Allows authenticated users to "
                     + "retrieve all OrderItems for a specific order")
     public Set<OrderItemResponseDto> getOrderItems(
+            Authentication authentication,
             @PathVariable @Positive Long orderId) {
-        return orderService.findAllOrderItems(orderId);
+        User user = (User) authentication.getPrincipal();
+        return orderService.findAllOrderItems(orderId, user.getId());
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
@@ -81,7 +84,6 @@ public class OrderController {
     public List<OrderItemResponseDto> getOrderItem(
             @PathVariable @Positive Long orderId,
             @PathVariable @Positive Long itemId) {
-        return orderService.getItems(orderId, itemId);
-
+        return orderService.findOrderItemById(orderId, itemId);
     }
 }
