@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
         return orderItemMapper.toDto(
                 orderItemRepository.findOrderItemByOrderIdAndId(
                         order.getId(), orderItemId).orElseThrow(
-                        () -> new EntityNotFoundException("Cannot find item by id:"
+                                () -> new EntityNotFoundException("Cannot find item by id:"
                                 + orderItemId)));
     }
 
