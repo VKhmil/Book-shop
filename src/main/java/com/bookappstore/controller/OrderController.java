@@ -69,7 +69,7 @@ public class OrderController {
     @Operation(summary = "Retrieve all OrderItems for a specific order",
             description = "Allows authenticated users to "
                     + "retrieve all OrderItems for a specific order")
-    public Set<OrderItemResponseDto> getOrderItems(
+    public Set<OrderItemResponseDto> findOrderItemsByOrder(
             Authentication authentication,
             @PathVariable @Positive Long orderId) {
         User user = (User) authentication.getPrincipal();
@@ -81,7 +81,7 @@ public class OrderController {
     @Operation(summary = "Retrieve a specific OrderItem within an order",
             description = "Allows authenticated users "
                     + "to retrieve a specific OrderItem within an order")
-    public List<OrderItemResponseDto> getOrderItem(
+    public OrderItemResponseDto getOrderItem(
             @PathVariable @Positive Long orderId,
             @PathVariable @Positive Long itemId) {
         return orderService.findOrderItemById(orderId, itemId);

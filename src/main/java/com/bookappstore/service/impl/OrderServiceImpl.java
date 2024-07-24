@@ -67,10 +67,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemResponseDto> findOrderItemById(Long orderId, Long orderItemId) {
-        Set<OrderItem> orderItem = orderItemRepository
-                .findOrderItemByOrderIdAndId(orderId, orderItemId);
-        return orderItemMapper.toDtos(orderItem);
+    public OrderItemResponseDto findOrderItemById(Long orderId, Long orderItemId) {
+        Order order = getOrderById(orderId);
+        return orderItemMapper.toDto(
+                orderItemRepository.findOrderItemByOrderIdAndId(
+                        order.getId(), orderItemId).orElseThrow(
+                        () -> new EntityNotFoundException("Cannot find item by id:"
+                                + orderItemId)));
     }
 
     @Override
