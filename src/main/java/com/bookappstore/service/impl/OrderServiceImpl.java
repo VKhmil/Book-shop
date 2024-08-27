@@ -40,8 +40,8 @@ public class OrderServiceImpl implements OrderService {
                 .findOrdersByUserId(userId));
     }
 
-    @Transactional
     @Override
+    @Transactional
     public OrderResponseDto create(Long userId, OrderRequestDto orderRequestDto) {
         ShoppingCart shoppingCart = getShoppingCart(userId);
         Order userOrder = orderRepository.save(
@@ -50,6 +50,9 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .peek(orderItem -> orderItem.setOrder(userOrder))
                 .collect(Collectors.toSet()));
+        shoppingCart.getCartItems().clear();
+        shoppingCartRepository.save(shoppingCart);
+
         return orderMapper.toDto(userOrder);
     }
 
@@ -59,7 +62,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = getOrderById(orderId);
         Order.Status status = Order.Status.valueOf(orderUpdateDto
                 .status()
-                .toString()
+                .name()
                 .toUpperCase());
         order.setStatus(status);
         orderRepository.save(order);
@@ -67,13 +70,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderItemResponseDto findOrderItemById(Long orderId, Long orderItemId) {
-        Order order = getOrderById(orderId);
+    public OrderItemResponseDto findOrderItemById(Long orderId, Long orderItemId, Long userId) {
         return orderItemMapper.toDto(
-                orderItemRepository.findOrderItemByOrderIdAndId(
-                        order.getId(), orderItemId).orElseThrow(
-                                () -> new EntityNotFoundException("Cannot find item by id:"
-                                + orderItemId)));
+                orderItemRepository.findOrderItemByOrderIdAndIdAndUserId(
+                        orderId, orderItemId, userId).orElseThrow(
+                                () -> new EntityNotFoundException("Cannot find item by id: "
+                                        + orderItemId))
+        );
     }
 
     @Override

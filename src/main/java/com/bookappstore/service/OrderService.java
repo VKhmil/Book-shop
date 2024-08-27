@@ -15,7 +15,7 @@ public interface OrderService {
 
     OrderResponseDto setUpdateStatus(Long userId, OrderUpdateDto orderUpdateDto);
 
-    OrderItemResponseDto findOrderItemById(Long orderId, Long id);
+    OrderItemResponseDto findOrderItemById(Long orderId, Long orderItemId, Long id);
 
     Set<OrderItemResponseDto> findAllOrderItems(Long orderId, Long userId);
 }
