@@ -21,7 +21,6 @@ databaseChangeLog:
                     referencedTableName: users
                     referencedColumnNames: id
                     nullable: false
-
               - column:
                   name: status
                   type: varchar(255)

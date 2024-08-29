@@ -92,9 +92,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Order initializeNewOrder(ShoppingCart shoppingCart, OrderRequestDto requestDto) {
-        Order newOrder = shoppingCartMapper.toOrder(shoppingCart);
+        Order newOrder = orderMapper.toOrder(shoppingCart);
         newOrder.setShippingAddress(requestDto.shippingAddress());
-        newOrder.setStatus(Order.Status.PENDING);
         newOrder.setTotal(countTotal(newOrder));
         return newOrder;
     }
