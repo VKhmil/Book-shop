@@ -50,6 +50,6 @@ public class Order {
     public enum Status {
         DELIVERED,
         PENDING,
-        COMPLETED;
+        COMPLETED
     }
 }
