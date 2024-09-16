@@ -1,0 +1,2 @@
+INSERT INTO books (id, title, author, isbn, price, description, cover_image) VALUES
+(1, 'Test Book 1', 'Test Author 1', '978-3-16-148410-0', 19.99, 'Description for Test Book 1', 'http://example.com/cover1.jpg');
