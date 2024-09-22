@@ -1,4 +1,4 @@
-package com.bookappstore.service;
+package com.bookappstore.service.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +20,6 @@ import com.bookappstore.model.Category;
 import com.bookappstore.repository.book.BookRepository;
 import com.bookappstore.repository.book.spec.BookSpecificationBuilder;
 import com.bookappstore.repository.category.CategoryRepository;
-import com.bookappstore.service.impl.BookServiceImpl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

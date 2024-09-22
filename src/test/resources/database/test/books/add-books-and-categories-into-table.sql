@@ -1,2 +1,2 @@
-INSERT INTO book_category (book_id, category_id)
-VALUES (1, 1), (2, 1);
+INSERT INTO books_categories (category_id, book_id)
+VALUES (12, 12), (12, 13);
