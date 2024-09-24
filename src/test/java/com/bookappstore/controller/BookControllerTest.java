@@ -9,25 +9,18 @@ import com.bookappstore.dto.book.BookDto;
 import com.bookappstore.dto.book.CreateBookRequestDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import javax.sql.DataSource;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
@@ -36,6 +29,16 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = {
+        "classpath:database/test/books/add-books-to-table.sql",
+        "classpath:database/test/categories/add-categories-to-table.sql",
+        "classpath:database/test/books/add-books-and-categories-into-table.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {
+        "classpath:database/test/books/delete-books-categories.sql",
+        "classpath:database/test/books/remove-books-from-table-books.sql",
+        "classpath:database/test/categories/delete-categories.sql"
+}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class BookControllerTest {
 
     private static MockMvc mockMvc;
@@ -45,103 +48,26 @@ class BookControllerTest {
 
     @BeforeAll
     static void beforeAll(
-            @Autowired DataSource dataSourse,
             @Autowired WebApplicationContext applicationContext
-    ) throws SQLException {
+    ) {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(applicationContext)
                 .apply(springSecurity())
                 .build();
-        teardown(dataSourse);
-        try (Connection connection = dataSourse.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/books/add-books-to-table.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/categories/add-categories-to-table.sql")
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/books/add-books-and-categories-into-table.sql")
-            );
-        }
-    }
-
-    @AfterAll
-    static void afterAll(
-            @Autowired DataSource dataSource
-    ) {
-        teardown(dataSource);
-    }
-
-    @SneakyThrows
-    private static void teardown(DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            connection.setAutoCommit(true);
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/books/delete-books-categories.sql"
-                    )
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/books/remove-books-from-table-books.sql"
-                    )
-            );
-            ScriptUtils.executeSqlScript(
-                    connection,
-                    new ClassPathResource(
-                            "database/test/categories/delete-categories.sql"
-                    )
-            );
-        }
     }
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @DisplayName("Update book")
-    @Sql(scripts = {
-            "classpath:database/test/books/add-one-book.sql",
-    },
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = {
-            "classpath:database/test/books/delete-book-from-books_categories.sql",
-            "classpath:database/test/books/remove-book-from-table-books.sql",
-    },
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void updateByValidId_ShouldReturnUpdateBook() throws Exception {
-        long bookId = 3L;
-        CreateBookRequestDto updateRequestDto = new CreateBookRequestDto()
-                .setTitle("Updated Book Title")
-                .setAuthor("Updated Author")
-                .setDescription("Updated description for the book")
-                .setIsbn("9783161484103")
-                .setPrice(BigDecimal.valueOf(25.99))
-                .setCoverImage("http://example.com/updated-cover.jpg")
-                .setCategoriesIds(Set.of(13L));
-
-        BookDto expectedDto = new BookDto()
-                .setId(bookId)
-                .setTitle(updateRequestDto.getTitle())
-                .setAuthor(updateRequestDto.getAuthor())
-                .setDescription(updateRequestDto.getDescription())
-                .setIsbn(updateRequestDto.getIsbn())
-                .setPrice(updateRequestDto.getPrice())
-                .setCoverImage(updateRequestDto.getCoverImage())
-                .setCategoriesIds(updateRequestDto.getCategoriesIds());
+    @DisplayName("Given valid book ID and update request, should return updated book")
+    void updateByValidId_ShouldReturnUpdatedBook_Ok() throws Exception {
+        long bookId = 12L;
+        CreateBookRequestDto updateRequestDto = createUpdateRequestDto();
+        BookDto expectedDto = createExpectedBookDto(bookId, updateRequestDto);
 
         String jsonRequest = objectMapper.writeValueAsString(updateRequestDto);
 
         MvcResult result = mockMvc.perform(
-                        post("/books/3")
+                        post("/books/" + bookId)
                                 .content(jsonRequest)
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -156,36 +82,10 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @DisplayName("Save book")
-    @Sql(scripts = {
-            "classpath:database/test/categories/clear-categories.sql",
-            "classpath:database/test/books/clear-books-table.sql"
-    },
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = {
-            "classpath:database/test/books/delete-books-categories.sql",
-            "classpath:database/test/categories/delete-categories.sql",
-            "classpath:database/test/books/remove-books-from-table-books.sql",
-    },
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void createBook_ValidRequestDto_Success() throws Exception {
-        CreateBookRequestDto createBookRequestDto = new CreateBookRequestDto()
-                .setTitle("Test Book 1")
-                .setAuthor("Test Author 1")
-                .setDescription("Valid Description with less than 255 characters")
-                .setIsbn("9783161484100")
-                .setPrice(BigDecimal.valueOf(19.99))
-                .setCoverImage("http://example.com/cover1.jpg")
-                .setCategoriesIds(Set.of(12L, 13L));
-
-        BookDto expectedDto = new BookDto()
-                .setTitle(createBookRequestDto.getTitle())
-                .setAuthor(createBookRequestDto.getAuthor())
-                .setDescription(createBookRequestDto.getDescription())
-                .setIsbn(createBookRequestDto.getIsbn())
-                .setPrice(createBookRequestDto.getPrice())
-                .setCoverImage(createBookRequestDto.getCoverImage())
-                .setCategoriesIds(createBookRequestDto.getCategoriesIds());
+    @DisplayName("Given valid create request, should create a new book")
+    void createBook_ValidRequest_ShouldCreateBook_Ok() throws Exception {
+        CreateBookRequestDto createBookRequestDto = createBookRequestDto();
+        BookDto expectedDto = createExpectedBookDtoWithoutId(createBookRequestDto);
 
         String jsonRequest = objectMapper.writeValueAsString(createBookRequestDto);
         MvcResult result = mockMvc.perform(
@@ -205,28 +105,9 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = "USER")
-    void findAllBook_GivenBooksInCatalog_ShouldReturnBooks() throws Exception {
-        List<BookDto> expected = new ArrayList<>();
-        expected.add(new BookDto()
-                .setId(12L)
-                .setTitle("Test Book 1")
-                .setAuthor("Test Author 1")
-                .setDescription("Description for Test Book 1")
-                .setIsbn("9783161484100")
-                .setPrice(BigDecimal.valueOf(19.99))
-                .setCoverImage("http://example.com/cover1.jpg")
-                .setCategoriesIds(Set.of(12L))
-        );
-        expected.add(new BookDto()
-                .setId(13L)
-                .setTitle("Test Book 2")
-                .setAuthor("Test Author 2")
-                .setDescription("Description for Test Book 2")
-                .setIsbn("9783161484101")
-                .setPrice(BigDecimal.valueOf(29.99))
-                .setCoverImage("http://example.com/cover2.jpg")
-                .setCategoriesIds(Set.of(12L))
-        );
+    @DisplayName("Find all books in the catalog, should return all books")
+    void findAllBooks_BooksExistInCatalog_ShouldReturnAllBooks_Ok() throws Exception {
+        List<BookDto> expected = createBooksList();
 
         MvcResult result = mockMvc.perform(get("/books")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -242,27 +123,10 @@ class BookControllerTest {
 
     @Test
     @WithMockUser(username = "user", roles = "USER")
-    @DisplayName("Find book by ID")
-    @Sql(scripts = {
-            "classpath:database/test/books/add-one-book.sql",
-    },
-            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-    @Sql(scripts = {
-            "classpath:database/test/books/delete-book-from-books_categories.sql",
-            "classpath:database/test/books/remove-book-from-table-books.sql",
-    },
-            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void findById_ByGivenId_ShouldReturnValidBook() throws Exception {
-        long bookId = 3L;
-        BookDto expected = new BookDto()
-                .setId(bookId)
-                .setTitle("Test Book 3")
-                .setAuthor("Test Author 3")
-                .setDescription("Description for Test Book 3")
-                .setIsbn("9783161484107")
-                .setPrice(BigDecimal.valueOf(40.99))
-                .setCoverImage("http://example.com/cover3.jpg")
-                .setCategoriesIds(Set.of());
+    @DisplayName("Find book by ID, should return the valid book")
+    void findById_ValidId_ShouldReturnBook_Ok() throws Exception {
+        long bookId = 12L;
+        BookDto expected = createBookDto(bookId);
 
         MvcResult result = mockMvc.perform(get("/books/" + bookId)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -273,5 +137,85 @@ class BookControllerTest {
                 .getContentAsByteArray(),
                 BookDto.class);
         Assertions.assertEquals(expected, actual);
+    }
+
+    private CreateBookRequestDto createUpdateRequestDto() {
+        return new CreateBookRequestDto()
+                .setTitle("Updated Book Title")
+                .setAuthor("Updated Author")
+                .setDescription("Updated description for the book")
+                .setIsbn("9783161484103")
+                .setPrice(BigDecimal.valueOf(25.99))
+                .setCoverImage("http://example.com/updated-cover.jpg")
+                .setCategoriesIds(Set.of(13L));
+    }
+
+    private CreateBookRequestDto createBookRequestDto() {
+        return new CreateBookRequestDto()
+                .setTitle("Test Book 10")
+                .setAuthor("Test Author 10")
+                .setDescription("Valid Description with less than 255 characters")
+                .setIsbn("9783161484110")
+                .setPrice(BigDecimal.valueOf(39.99))
+                .setCoverImage("http://example.com/cover10.jpg")
+                .setCategoriesIds(Set.of(12L, 13L));
+    }
+
+    private BookDto createExpectedBookDto(long bookId, CreateBookRequestDto requestDto) {
+        return new BookDto()
+                .setId(bookId)
+                .setTitle(requestDto.getTitle())
+                .setAuthor(requestDto.getAuthor())
+                .setDescription(requestDto.getDescription())
+                .setIsbn(requestDto.getIsbn())
+                .setPrice(requestDto.getPrice())
+                .setCoverImage(requestDto.getCoverImage())
+                .setCategoriesIds(requestDto.getCategoriesIds());
+    }
+
+    private BookDto createExpectedBookDtoWithoutId(CreateBookRequestDto requestDto) {
+        return new BookDto()
+                .setTitle(requestDto.getTitle())
+                .setAuthor(requestDto.getAuthor())
+                .setDescription(requestDto.getDescription())
+                .setIsbn(requestDto.getIsbn())
+                .setPrice(requestDto.getPrice())
+                .setCoverImage(requestDto.getCoverImage())
+                .setCategoriesIds(requestDto.getCategoriesIds());
+    }
+
+    private List<BookDto> createBooksList() {
+        List<BookDto> books = new ArrayList<>();
+        books.add(new BookDto()
+                .setId(12L)
+                .setTitle("Test Book 1")
+                .setAuthor("Test Author 1")
+                .setDescription("Description for Test Book 1")
+                .setIsbn("9783161484100")
+                .setPrice(BigDecimal.valueOf(19.99))
+                .setCoverImage("http://example.com/cover1.jpg")
+                .setCategoriesIds(Set.of(12L)));
+        books.add(new BookDto()
+                .setId(13L)
+                .setTitle("Test Book 2")
+                .setAuthor("Test Author 2")
+                .setDescription("Description for Test Book 2")
+                .setIsbn("9783161484101")
+                .setPrice(BigDecimal.valueOf(29.99))
+                .setCoverImage("http://example.com/cover2.jpg")
+                .setCategoriesIds(Set.of(12L)));
+        return books;
+    }
+
+    private BookDto createBookDto(long id) {
+        return new BookDto()
+                .setId(id)
+                .setTitle("Test Book 1")
+                .setAuthor("Test Author 1")
+                .setDescription("Description for Test Book 1")
+                .setIsbn("9783161484100")
+                .setPrice(BigDecimal.valueOf(19.99))
+                .setCoverImage("http://example.com/cover1.jpg")
+                .setCategoriesIds(Set.of(12L));
     }
 }

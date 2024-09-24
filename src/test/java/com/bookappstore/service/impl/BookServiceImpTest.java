@@ -57,9 +57,9 @@ public class BookServiceImpTest {
 
     @Test
     @DisplayName("Verify the correct fields were returned when book exists")
-    void findBookById_WithValidBookId_ShouldReturnUser() {
+    void findBookById_WithValidBookId_ShouldReturnUser_Ok() {
         Long idBook = 1L;
-        Book book = createTestBookWithoutId();
+        Book book = createTestBook();
         BookDto bookDto = createBookDto();
 
         when(bookRepository.findBookById(idBook)).thenReturn(Optional.of(book));
@@ -75,7 +75,7 @@ public class BookServiceImpTest {
 
     @Test
     @DisplayName("Using wrong id, method must throw an exception")
-    void getById_NonExistingId_ShouldReturnException() {
+    void getById_NonExistingId_ShouldThrowException_NotOk() {
         when(bookRepository.findBookById(anyLong())).thenReturn(Optional.empty());
         Assertions.assertThrows(EntityNotFoundException.class,
                 () -> bookService.findById(anyLong()));
@@ -83,9 +83,9 @@ public class BookServiceImpTest {
 
     @Test
     @DisplayName("Saving book with correct fields in a right way")
-    void save_NormalBook_ShouldReturnBook() {
+    void save_ValidBook_ShouldReturnBook_Ok() {
         CreateBookRequestDto testBookRequestDto = createTestBookRequestDto();
-        Book bookWithoutId = createTestBookWithoutId();
+        Book bookWithoutId = createTestBook();
         BookDto bookDto = createBookDto();
 
         when(bookMapper.toModel(testBookRequestDto)).thenReturn(bookWithoutId);
@@ -98,7 +98,8 @@ public class BookServiceImpTest {
     }
 
     @Test
-    public void testFindAllBooksWithCategories() {
+    @DisplayName("Return all books with categories")
+    public void findAllBooks_WithCategories_Ok() {
 
         Book book1 = createTestBook();
         book1.setId(1L);
@@ -131,12 +132,15 @@ public class BookServiceImpTest {
 
     @Test
     @DisplayName("Update book by Id")
-    public void updateBook_UpdateBookById_Correct() {
+    public void updateBook_UpdateBookBy_CorrectId_Ok() {
         Set<Category> categories = Set.of(createCategory(1L, "Fiction"));
         Book book = createTestBook();
         CreateBookRequestDto createBookRequestDto = createTestBookRequestDto();
+        Long idTest = 1L;
         Mockito.when(categoryRepository.findByIdIn(createBookRequestDto.getCategoriesIds()))
                 .thenReturn(categories);
+        Mockito.when(bookRepository.findById(idTest)).thenReturn(Optional.of(book));
+        Mockito.when(bookRepository.save(any(Book.class))).thenReturn(book);
 
         book.setCategories(categories);
         book.setTitle(createBookRequestDto.getTitle());
@@ -145,10 +149,6 @@ public class BookServiceImpTest {
         book.setPrice(createBookRequestDto.getPrice());
         book.setIsbn(createBookRequestDto.getIsbn());
         book.setCoverImage(createBookRequestDto.getCoverImage());
-        Long idTest = 1L;
-
-        Mockito.when(bookRepository.findById(idTest)).thenReturn(Optional.of(book));
-        Mockito.when(bookRepository.save(any(Book.class))).thenReturn(book);
 
         BookDto expectedBookDto = createBookDto();
         expectedBookDto.setTitle(createBookRequestDto.getTitle());
@@ -164,7 +164,6 @@ public class BookServiceImpTest {
 
         assertNotNull(result);
         assertEquals(expectedBookDto, result);
-
         verify(bookRepository).findById(idTest);
         verify(categoryRepository).findByIdIn(createBookRequestDto.getCategoriesIds());
         verify(bookRepository).save(book);
@@ -173,7 +172,7 @@ public class BookServiceImpTest {
 
     @Test
     @DisplayName("Search books by parameters")
-    public void testSearchBooksByParameters() {
+    public void searchBooks_ByParameters_ShouldReturnBooks_WithValidParameters_Ok() {
         BookSearchParametersDto searchParams = createTestSearchParameters();
 
         Specification<Book> specification = Mockito.mock(Specification.class);
@@ -224,10 +223,6 @@ public class BookServiceImpTest {
         book.setIsbn("978-3-16-148410-0");
         book.setCoverImage("http://example.com/cover.jpg");
         return book;
-    }
-
-    private Book createTestBookWithoutId() {
-        return createTestBook();
     }
 
     private BookDto createBookDto() {
