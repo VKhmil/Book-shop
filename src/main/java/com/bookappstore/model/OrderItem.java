@@ -22,7 +22,7 @@ import org.hibernate.annotations.SQLRestriction;
 @EqualsAndHashCode(of = {"order", "book"})
 @SQLDelete(sql = "UPDATE order_items SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted")
-@Table(name = "orders_item")
+@Table(name = "order_items")
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
